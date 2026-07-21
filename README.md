@@ -4,7 +4,7 @@ End-to-end operations analytics stack: ETL pipeline loading orders, inventory,
 supplier, and costed BOM data into PostgreSQL, SQL-driven KPI analytics,
 ML demand forecasting, and an optional LLM natural-language query layer.
 
-**Live demo:** (add URL after deploy)
+**Live demo:** https://meridian-ops-production.up.railway.app
 
 ## Stack
 - **Python** (pandas, scikit-learn, SQLAlchemy)
@@ -31,7 +31,11 @@ streamlit run src/app.py
 ```
 
 ## Deploy
-1. Provision PostgreSQL (Railway) and set `DATABASE_URL`
-2. `python src/etl.py` once against that database
-3. Deploy to Streamlit Community Cloud pointing at `src/app.py`,
-   with `DATABASE_URL` (and optionally an LLM API key) in app secrets
+Deployed on Railway: the Streamlit app and PostgreSQL run as linked services,
+with auto-deploy from GitHub on every push to main.
+
+1. Create a Railway project from this repo and add a PostgreSQL service
+2. Reference `DATABASE_URL` from Postgres in the app's variables
+3. Set the start command: `streamlit run src/app.py --server.port $PORT --server.address 0.0.0.0`
+4. Run `python src/etl.py` once against the database to load data
+5. Optional: set `ANTHROPIC_API_KEY` to enable the natural-language query tab
