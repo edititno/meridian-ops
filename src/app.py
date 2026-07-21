@@ -1,4 +1,4 @@
-"""Operations Analytics Dashboard.
+"""Meridian Ops: operations analytics dashboard.
 
 Streamlit app: exec KPIs, demand forecasting, supplier performance,
 inventory position, costed BOM margins, and an optional LLM query box.
@@ -110,7 +110,14 @@ with tab_ask:
         st.info("LLM querying is disabled (no API key configured). All analytics above run on pure SQL.")
     else:
         question = st.text_input("Question", placeholder="Which supplier causes the most schedule slip?")
-        if question:
+        if "ask_count" not in st.session_state:
+            st.session_state.ask_count = 0
+        if question and st.session_state.ask_count >= 10:
+            st.warning("Question limit reached for this session.")
+        elif question and len(question) > 300:
+            st.warning("Please keep questions under 300 characters.")
+        elif question:
+            st.session_state.ask_count += 1
             context = {name: run_query(name).head(25).to_csv(index=False)
                        for name in ["supplier_performance", "inventory_position", "costed_bom", "kpi_summary"]}
             prompt = (
