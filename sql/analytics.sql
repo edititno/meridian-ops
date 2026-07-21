@@ -75,6 +75,7 @@ SELECT
     SUM(o.quantity) AS units
 FROM orders o
 JOIN products p ON p.product_id = o.product_id
+WHERE o.order_date < DATE_TRUNC('week', (SELECT MAX(order_date) FROM orders))
 GROUP BY p.sku, 2
 ORDER BY p.sku, week;
 
